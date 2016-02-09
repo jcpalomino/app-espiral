@@ -324,3 +324,12 @@ mm-navigation-bar {
     /* show the checkmark icon when its checked */
     visibility: visible;
   }
+
+/**
+ * Soft red
+ */
+.item.item-assertive {
+  border-color: #e42112;
+  background-color: #F8968F;
+  color: #fff;
+}

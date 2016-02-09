@@ -154,5 +154,34 @@ angular.module('mm.addons.notes')
         });
     };
 
+
+    /**
+     * Check if notes can be deleted in current site.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmanotes#canDeleteNotes
+     * @return {Boolean} True if can delete notes, false otherwise.
+     */
+    self.canDeleteNotes = function() {
+        return $mmSite.wsAvailable('core_notes_delete_notes');
+    };
+
+    /**
+     * Delete the given notes.
+     *
+     * @module mm.addons.notes
+     * @ngdoc method
+     * @name $mmaNotes#deleteNotes
+     * @param {Array} notes     List of notes ids.
+     * @return {Promise}        Promise resolved when the notes have been deleted.
+     */
+    self.deleteNotes = function(notes) {
+        var params = {
+            notes: notes
+        };
+        return $mmSite.write('core_notes_delete_notes', params);
+    };
+
     return self;
 });

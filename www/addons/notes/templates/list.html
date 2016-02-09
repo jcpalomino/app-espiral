@@ -1,14 +1,19 @@
 <ion-view>
     <ion-nav-title>{{ title }}</ion-nav-title>
 
+    <ion-nav-buttons side="secondary">
+        <strong ng-if="selectedNotes.length">{{selectedNotes.length}}</strong>
+        <button ng-if="selectedNotes.length" class="button button-icon icon ion-trash-a" aria-label="{{ 'mm.core.deleting' | translate }}" ng-click="deleteNotes()"></button>
+    </ion-nav-buttons>
+
     <ion-content>
         <ion-refresher pulling-text="{{ 'mm.core.pulltorefresh' | translate }}" ng-if="notesLoaded"
                        on-refresh="refreshNotes()">
         </ion-refresher>
         <mm-loading hide-until="notesLoaded">
             <div class="list">
-                <article class="card" ng-repeat="note in notes">
-                        <div class="item item-avatar">
+                <article class="card" ng-repeat="note in notes" on-hold="selectNote(note.id)">
+                        <div class="item item-avatar" ng-class='{"item-assertive": selectedNotes.indexOf(note.id) !== -1}'>
                             <img ng-if="note.userprofileimageurl" ng-src="{{note.userprofileimageurl}}" mm-external-content mm-user-link courseid="{{courseid}}" userid="{{note.userid}}">
                             <img ng-if="!note.userprofileimageurl" src="img/user-avatar.png" alt="" role="presentation">
                             <div class="item-note">{{note.lastmodified | mmDateDayOrTime}}</div>

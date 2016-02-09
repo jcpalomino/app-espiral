@@ -28,6 +28,9 @@ angular.module('mm.addons.notes')
 
     $scope.courseid = courseid;
     $scope.type = type;
+    $scope.selectedNotes = [];
+    // Check if user can delete notes.
+    var canDelete = $mmaNotes.canDeleteNotes();
 
     $translate('mma.notes.' + type + 'notes').then(function(string) {
         $scope.title = string;
@@ -60,6 +63,53 @@ angular.module('mm.addons.notes')
     $scope.refreshNotes = function() {
         fetchNotes(true).finally(function() {
             $scope.$broadcast('scroll.refreshComplete');
+        });
+    };
+
+    /**
+     * Add or remove a note from the current selection.
+     *
+     * @param  {Number} noteId The note Id.
+     */
+    $scope.selectNote = function(noteId) {
+        if (!canDelete) {
+            return;
+        }
+
+        var index = $scope.selectedNotes.indexOf(noteId);
+        if (index !== -1) {
+            $scope.selectedNotes.splice(index, 1);
+        } else {
+            $scope.selectedNotes.push(noteId);
+        }
+    };
+
+    /**
+     * Delete the selected notes.
+     */
+    $scope.deleteNotes = function() {
+
+        var modal = $mmUtil.showModalLoading('mm.core.deleting', true);
+        $mmaNotes.deleteNotes($scope.selectedNotes).then(function() {
+            // Remove notes from list.
+            var i = $scope.notes.length;
+            while (i--){
+                if ($scope.selectedNotes.indexOf($scope.notes[i].id) !== -1){
+                    $scope.notes.splice(i, 1);
+                }
+            }
+            // Clear the selected notes array.
+            $scope.selectedNotes = [];
+            // Re-fetch notes to update the cached data.
+            $scope.refreshNotes();
+        }).catch(function(error) {
+            if (typeof error === 'string') {
+                $mmUtil.showErrorModal(error);
+            } else {
+                $mmUtil.showErrorModal('mm.core.errorinvalidresponse', true);
+            }
+        }).finally(function() {
+            modal.dismiss();
         });
     };
 });
